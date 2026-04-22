@@ -1,0 +1,15 @@
+# תיקון ל-Vercel
+
+אם קיבלת `vite: Permission denied`, ודא ש:
+1. `node_modules` לא נכנס ל-Git
+2. `dist` לא נכנס ל-Git
+3. קיים `.gitignore` תקין
+4. מריצים מקומית:
+   npm install
+   npm run build
+
+אחר כך:
+git rm -r --cached node_modules dist
+git add .
+git commit -m "Fix Vercel deploy"
+git push
