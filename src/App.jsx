@@ -83,23 +83,46 @@ const itinerary = [
   {
     date: "2026-05-17",
     label: "17 במאי",
-    city: "איזו → אוסקה",
+    city: "איזו / Fuji-Q / אוסקה",
     group: "ימי מעבר",
-    area: "טיול יום ומעבר עיר",
+    area: "17.5 · שני מסלולים לשתי קבוצות",
     image: "/locations/izu.png",
-    imageTitle: "Izu · coastal road trip",
-    vibe: "היום שמשלב טבע מרהיב, כבישי חוף ורכבת מהירה לאוסקה.",
-    stores: ["Pokemon Center Osaka", "Mugiwara Store Osaka", "Round 1 Osaka"],
-    items: [
-      { time: "07:20", title: "יציאה משינג'וקו ברכבת Romancecar", notes: "רצוי מושבים בצד ימין לכיוון הנסיעה; אפשר לשקול קרון תצפית פנורמי.", mapQuery: "Shinjuku Station" },
-      { time: "08:31", title: "איסוף רכב באודווארה", notes: "Toyota Rent-A-Car Odawara Station Shinkansen Exit.", mapQuery: "Odawara Station" },
-      { time: "10:15", title: "Jogasaki Coast", notes: "טיול קצר על המצוקים הוולקניים והגשר התלוי מעל הים.", mapQuery: "Jogasaki Coast" },
-      { time: "11:15", title: "Mt. Omuro", notes: "עלייה ברכבל לתצפית פנורמית מרהיבה.", mapQuery: "Mount Omuro" },
-      { time: "13:15", title: "Shuzenji + ארוחת צהריים", notes: "מקדש שוזנג'י, שביל יער הבמבוק והמלצה על סובה מסורתית.", extras: ["Bamboo Forest Path"], mapQuery: "Shuzenji Temple" },
-      { time: "15:45", title: "Mishima Skywalk", notes: "הליכה על הגשר התלוי הארוך ביפן עם נוף להר פוג'י ביום בהיר.", mapQuery: "Mishima Skywalk" },
-      { time: "17:00", title: "החזרת הרכב במישימה", mapQuery: "Mishima Station" },
-      { time: "17:30–18:00", title: "שינקנסן לאוסקה", notes: "Mishima Station → Shin-Osaka.", mapQuery: "Shin-Osaka Station" },
-      { time: "לילה", title: "הגעה לאוסקה", extras: ["Osaka Umeda Station", "Pokemon Center Osaka", "Mugiwara Store Osaka", "Round 1 Osaka"], mapQuery: "Umeda Osaka" },
+    imageTitle: "17.5 · Izu & Fuji-Q split day",
+    vibe: "ביום הזה הקבוצה מתפצלת לשני מסלולים: ספיר ואביב יוצאים למסלול איזו, והשמופים מבלים ב-Fuji-Q ואז ממשיכים לכיוון אוסקה.",
+    stores: ["Jogasaki Coast", "Mt. Omuro", "Shuzenji", "Fuji-Q Highland", "Pokemon Center Osaka"],
+    items: [],
+    parts: [
+      {
+        key: "sapir-aviv",
+        title: "חלק 1 · ספיר ואביב",
+        subtitle: "מסלול איזו",
+        badge: "איזו",
+        items: [
+          { time: "07:20", title: "יציאה משינג'וקו ברכבת Romancecar", notes: "רצוי מושבים בצד ימין לכיוון הנסיעה; אפשר לשקול קרון תצפית פנורמי.", mapQuery: "Shinjuku Station" },
+          { time: "08:31", title: "איסוף רכב באודווארה", notes: "Toyota Rent-A-Car Odawara Station Shinkansen Exit.", mapQuery: "Odawara Station" },
+          { time: "10:15", title: "Jogasaki Coast", notes: "טיול קצר על המצוקים הוולקניים והגשר התלוי מעל הים.", mapQuery: "Jogasaki Coast" },
+          { time: "11:15", title: "Mt. Omuro", notes: "עלייה ברכבל לתצפית פנורמית מרהיבה.", mapQuery: "Mount Omuro" },
+          { time: "13:15", title: "Shuzenji + ארוחת צהריים", notes: "מקדש שוזנג'י, שביל יער הבמבוק והמלצה על סובה מסורתית.", extras: ["Bamboo Forest Path"], mapQuery: "Shuzenji Temple" },
+          { time: "15:45", title: "Mishima Skywalk", notes: "הליכה על הגשר התלוי הארוך ביפן עם נוף להר פוג'י ביום בהיר.", mapQuery: "Mishima Skywalk" },
+          { time: "17:00", title: "החזרת הרכב במישימה", mapQuery: "Mishima Station" },
+          { time: "17:30–18:00", title: "שינקנסן לאוסקה", notes: "Mishima Station → Shin-Osaka.", mapQuery: "Shin-Osaka Station" },
+          { time: "לילה", title: "הגעה לאוסקה", extras: ["Osaka Umeda Station", "Pokemon Center Osaka", "Mugiwara Store Osaka", "Round 1 Osaka"], mapQuery: "Umeda Osaka" },
+        ],
+      },
+      {
+        key: "shmoops",
+        title: "חלק 2 · השמופים",
+        subtitle: "Fuji-Q Highland",
+        badge: "Fuji-Q",
+        items: [
+          { time: "06:55", title: "אוטובוס מ-Busta Shinjuku ל-Fuji-Q", notes: "אוטובוס ישיר לפארק.", mapQuery: "Busta Shinjuku" },
+          { time: "08:25", title: "הגעה לפארק Fuji-Q", notes: "יום פארק של השמופים.", mapQuery: "Fuji-Q Highland" },
+          { time: "15:10", title: "יציאה מ-Fuji-Q למישימה", notes: "Mishima-Kawaguchiko Liner.", mapQuery: "Fuji-Q Highland" },
+          { time: "16:30", title: "הגעה למישימה", mapQuery: "Mishima Station" },
+          { time: "17:30–18:00", title: "שינקנסן לאוסקה", notes: "Mishima Station → Shin-Osaka.", mapQuery: "Shin-Osaka Station" },
+          { time: "לילה", title: "הגעה לאוסקה", extras: ["Osaka Umeda Station", "Pokemon Center Osaka", "Mugiwara Store Osaka"], mapQuery: "Umeda Osaka" },
+        ],
+      },
     ],
   },
   {
@@ -390,6 +413,17 @@ function getHotelForDate(date) {
   return hotels[4];
 }
 
+function getFlatItems(day) {
+  if (day.parts?.length) {
+    return day.parts.flatMap((part) => part.items || []);
+  }
+  return day.items || [];
+}
+
+function getItemStorageKey(day, index, partKey = null) {
+  return partKey ? `${day.date}-${partKey}-${index}` : `${day.date}-${index}`;
+}
+
 function getSearchBlob(day) {
   return [
     day.label,
@@ -398,7 +432,8 @@ function getSearchBlob(day) {
     day.area,
     day.vibe,
     ...(day.stores || []),
-    ...day.items.flatMap((item) => [item.title, item.notes || "", item.transport || "", ...(item.extras || [])]),
+    ...(day.parts?.flatMap((part) => [part.title, part.subtitle || "", part.badge || ""]) || []),
+    ...getFlatItems(day).flatMap((item) => [item.title, item.notes || "", item.transport || "", ...(item.extras || [])]),
   ]
     .join(" ")
     .toLowerCase();
@@ -408,6 +443,7 @@ export default function JapanWithTheShmoops() {
   const [selectedGroup, setSelectedGroup] = useState("הכל");
   const [query, setQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState(itinerary[0].date);
+  const [selectedPartKey, setSelectedPartKey] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [done, setDone] = useState(() => {
     try {
@@ -436,9 +472,24 @@ export default function JapanWithTheShmoops() {
   }, [visibleDays, selectedDate]);
 
   const day = visibleDays.find((entry) => entry.date === selectedDate) || visibleDays[0] || itinerary[0];
+  useEffect(() => {
+    if (day.parts?.length) {
+      const hasCurrentPart = day.parts.some((part) => part.key === selectedPartKey);
+      if (!hasCurrentPart) {
+        setSelectedPartKey(day.parts[0].key);
+      }
+    } else if (selectedPartKey !== null) {
+      setSelectedPartKey(null);
+    }
+  }, [day, selectedPartKey]);
+
   const theme = themes[day.group] || themes["טוקיו"];
-  const totalActivities = itinerary.reduce((sum, entry) => sum + entry.items.length, 0);
-  const progressCount = day.items.filter((_, index) => done[`${day.date}-${index}`]).length;
+  const activePart = day.parts?.find((part) => part.key === selectedPartKey) || day.parts?.[0] || null;
+  const currentItems = activePart ? activePart.items : day.items;
+  const totalActivities = itinerary.reduce((sum, entry) => sum + getFlatItems(entry).length, 0);
+  const progressCount = activePart
+    ? activePart.items.filter((_, index) => done[getItemStorageKey(day, index, activePart.key)]).length
+    : day.items.filter((_, index) => done[getItemStorageKey(day, index)]).length;
   const hotel = getHotelForDate(day.date);
   const activeIndex = itinerary.findIndex((entry) => entry.date === day.date);
 
@@ -453,8 +504,8 @@ export default function JapanWithTheShmoops() {
     setTimeout(scrollSelectedIntoView, 10);
   };
 
-  const toggleDone = (index) => {
-    const key = `${day.date}-${index}`;
+  const toggleDone = (index, partKey = null) => {
+    const key = getItemStorageKey(day, index, partKey);
     setDone((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
@@ -639,7 +690,7 @@ export default function JapanWithTheShmoops() {
                 <CardContent className="p-5 md:p-7">
                   <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
                     <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4">
-                      <div className="text-sm font-semibold text-slate-900">{day.imageTitle}</div>
+                      <div className="text-sm font-semibold text-slate-900">{activePart ? `${day.imageTitle} · ${activePart.badge}` : day.imageTitle}</div>
                     </div>
                     <div className="flex flex-wrap gap-2 md:justify-end">
                       <button
@@ -659,60 +710,68 @@ export default function JapanWithTheShmoops() {
                     </div>
                   </div>
 
-                  <div className="mt-6 space-y-4">
-                    {day.items.map((item, index) => {
-                      const isDone = !!done[`${day.date}-${index}`];
-                      return (
-                        <section key={`${item.title}-${index}`} className={`activity-card ${isDone ? "activity-card-done" : ""}`}>
-                          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                            <div className="flex gap-4">
-                              <div className={`activity-index ${isDone ? "activity-index-done" : `bg-gradient-to-br ${theme.accent} text-white`}`}>{index + 1}</div>
-                              <div className="min-w-0 space-y-3">
-                                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
-                                  <MetaChip icon={Clock3} text={item.time || "ללא שעה"} />
-                                  {item.transport ? <MetaChip icon={Train} text={item.transport} /> : null}
-                                </div>
-                                <h3 className="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">{item.title}</h3>
-                                {item.notes ? <p className="max-w-3xl text-[15px] leading-8 text-slate-600">{item.notes}</p> : null}
-                                {item.extras?.length ? (
-                                  <div>
-                                    <div className="mb-2 text-sm font-semibold text-slate-700">אפשר לשלב גם</div>
-                                    <div className="flex flex-wrap gap-2">
-                                      {item.extras.map((extra) => (
-                                        <span key={extra} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-600">{extra}</span>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ) : null}
-                              </div>
-                            </div>
-
-                            <div className="flex shrink-0 flex-wrap gap-2 lg:w-[220px] lg:justify-end">
-                              <Button
-                                variant={isDone ? "default" : "outline"}
-                                size="sm"
-                                className={`rounded-full ${isDone ? "bg-emerald-600 hover:bg-emerald-600 text-white" : "bg-white"}`}
-                                onClick={() => toggleDone(index)}
+                  {day.parts?.length ? (
+                    <div className="mt-6 space-y-4">
+                      <div className="rounded-[1.4rem] border border-slate-200/90 bg-white/80 p-3 shadow-sm">
+                        <div className="mb-3 text-sm font-semibold text-slate-700">בחירת מסלול ליום הזה</div>
+                        <div className="flex flex-wrap gap-2">
+                          {day.parts.map((part) => {
+                            const isActive = activePart?.key === part.key;
+                            return (
+                              <button
+                                key={part.key}
+                                type="button"
+                                onClick={() => setSelectedPartKey(part.key)}
+                                className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+                                  isActive
+                                    ? "border-slate-900 bg-slate-900 text-white shadow-md"
+                                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                }`}
                               >
-                                {isDone ? <CheckCircle2 className="ml-1 h-4 w-4" /> : <Circle className="ml-1 h-4 w-4" />}
-                                {isDone ? "בוצע" : "סמן"}
-                              </Button>
-                              {item.mapQuery ? (
-                                <a
-                                  href={mapUrl(item.mapQuery)}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-700 transition hover:border-slate-300"
-                                >
-                                  <MapPin className="ml-1 h-4 w-4" /> מפה
-                                </a>
-                              ) : null}
+                                {part.badge}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {activePart ? (
+                        <div className="rounded-[1.7rem] border border-slate-200/90 bg-white/75 p-4 shadow-sm">
+                          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                              <div className="text-lg font-bold text-slate-900">{activePart.title}</div>
+                              <div className="mt-1 text-sm text-slate-500">{activePart.subtitle}</div>
                             </div>
+                            <span className={`rounded-full border px-3 py-1 text-sm font-medium ${
+                              activePart.key === "sapir-aviv"
+                                ? "border-sky-200 bg-sky-50 text-sky-700"
+                                : "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700"
+                            }`}>
+                              {activePart.badge}
+                            </span>
                           </div>
-                        </section>
-                      );
-                    })}
-                  </div>
+                          <ActivityList
+                            items={activePart.items}
+                            day={day}
+                            partKey={activePart.key}
+                            done={done}
+                            toggleDone={toggleDone}
+                            accentClass={theme.accent}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <div className="mt-6 space-y-4">
+                      <ActivityList
+                        items={day.items}
+                        day={day}
+                        done={done}
+                        toggleDone={toggleDone}
+                        accentClass={theme.accent}
+                      />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
@@ -730,10 +789,10 @@ export default function JapanWithTheShmoops() {
                 </div>
                 <div className="mt-4 grid gap-3">
                   <SummaryRow label="תאריך" value={day.label} />
-                  <SummaryRow label="אזור" value={day.area} />
-                  <SummaryRow label="משימות" value={`${day.items.length}`} />
+                  <SummaryRow label="אזור" value={activePart?.subtitle || day.area} />
+                  <SummaryRow label="משימות" value={`${currentItems.length}`} />
                   <SummaryRow label="חנויות" value={`${day.stores.length}`} />
-                  <SummaryRow label="התקדמות" value={`${progressCount}/${day.items.length}`} />
+                  <SummaryRow label="התקדמות" value={`${progressCount}/${currentItems.length}`} />
                 </div>
               </CardContent>
             </Card>
@@ -836,6 +895,62 @@ function MetaChip({ icon: Icon, text }) {
       {text}
     </span>
   );
+}
+
+function ActivityList({ items, day, done, toggleDone, accentClass, partKey = null }) {
+  return items.map((item, index) => {
+    const storageKey = getItemStorageKey(day, index, partKey);
+    const isDone = !!done[storageKey];
+    return (
+      <section key={`${partKey || "main"}-${item.title}-${index}`} className={`activity-card ${isDone ? "activity-card-done" : ""}`}>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex gap-4">
+            <div className={`activity-index ${isDone ? "activity-index-done" : `bg-gradient-to-br ${accentClass} text-white`}`}>{index + 1}</div>
+            <div className="min-w-0 space-y-3">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                <MetaChip icon={Clock3} text={item.time || "ללא שעה"} />
+                {item.transport ? <MetaChip icon={Train} text={item.transport} /> : null}
+              </div>
+              <h3 className="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">{item.title}</h3>
+              {item.notes ? <p className="max-w-3xl text-[15px] leading-8 text-slate-600">{item.notes}</p> : null}
+              {item.extras?.length ? (
+                <div>
+                  <div className="mb-2 text-sm font-semibold text-slate-700">אפשר לשלב גם</div>
+                  <div className="flex flex-wrap gap-2">
+                    {item.extras.map((extra) => (
+                      <span key={extra} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-600">{extra}</span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="flex shrink-0 flex-wrap gap-2 lg:w-[220px] lg:justify-end">
+            <Button
+              variant={isDone ? "default" : "outline"}
+              size="sm"
+              className={`rounded-full ${isDone ? "bg-emerald-600 hover:bg-emerald-600 text-white" : "bg-white"}`}
+              onClick={() => toggleDone(index, partKey)}
+            >
+              {isDone ? <CheckCircle2 className="ml-1 h-4 w-4" /> : <Circle className="ml-1 h-4 w-4" />}
+              {isDone ? "בוצע" : "סמן"}
+            </Button>
+            {item.mapQuery ? (
+              <a
+                href={mapUrl(item.mapQuery)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-700 transition hover:border-slate-300"
+              >
+                <MapPin className="ml-1 h-4 w-4" /> מפה
+              </a>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    );
+  });
 }
 
 function SummaryRow({ label, value }) {
