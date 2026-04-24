@@ -533,7 +533,7 @@ export default function JapanWithTheShmoops() {
                     <Badge className="rounded-full border border-white/70 bg-white/80 px-4 py-1.5 text-sm text-slate-700 backdrop-blur">14–31 במאי 2026</Badge>
                   </div>
                   <div>
-                    <h1 className="text-4xl font-black tracking-tight text-slate-900 md:text-6xl">מסלול צבעוני, נעים וברוח יפן</h1>
+                    <h1 className="text-4xl font-black tracking-tight text-slate-900 md:text-6xl">יפן עם השמופים</h1>
                   </div>
                   <div className="flex flex-wrap gap-3">
                     <QuickPill icon={CalendarDays} text={`${itinerary.length} ימי טיול`} />
