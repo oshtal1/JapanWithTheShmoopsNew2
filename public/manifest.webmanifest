@@ -1,0 +1,16 @@
+{
+  "name": "יפן עם השמופים",
+  "short_name": "יפן עם השמופים",
+  "description": "מסלול הטיול ליפן עם השמופים",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff9f5",
+  "theme_color": "#f43f5e",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -12,6 +12,8 @@ import {
   ExternalLink,
   MapPin,
   Mountain,
+  Download,
+  Home,
   Menu,
   Search,
   ShoppingBag,
@@ -445,6 +447,9 @@ export default function JapanWithTheShmoops() {
   const [selectedDate, setSelectedDate] = useState(itinerary[0].date);
   const [selectedPartKey, setSelectedPartKey] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [installPromptEvent, setInstallPromptEvent] = useState(null);
+  const [installHelpOpen, setInstallHelpOpen] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const [done, setDone] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("japan-trip-done") || "{}");
@@ -456,6 +461,38 @@ export default function JapanWithTheShmoops() {
   useEffect(() => {
     localStorage.setItem("japan-trip-done", JSON.stringify(done));
   }, [done]);
+
+  useEffect(() => {
+    const checkStandalone = () => {
+      const standaloneMode = window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
+      setIsStandalone(Boolean(standaloneMode));
+    };
+
+    checkStandalone();
+    const mediaQuery = window.matchMedia?.("(display-mode: standalone)");
+    const handleStandaloneChange = () => checkStandalone();
+    mediaQuery?.addEventListener?.("change", handleStandaloneChange);
+
+    const handleBeforeInstallPrompt = (event) => {
+      event.preventDefault();
+      setInstallPromptEvent(event);
+    };
+
+    const handleAppInstalled = () => {
+      setInstallPromptEvent(null);
+      setInstallHelpOpen(false);
+      checkStandalone();
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    return () => {
+      mediaQuery?.removeEventListener?.("change", handleStandaloneChange);
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
 
   const visibleDays = useMemo(() => {
     return itinerary.filter((day) => {
@@ -517,6 +554,33 @@ export default function JapanWithTheShmoops() {
     }
   };
 
+  const handleAddToHomeScreen = async () => {
+    if (isStandalone) {
+      setInstallHelpOpen(true);
+      return;
+    }
+
+    if (installPromptEvent) {
+      installPromptEvent.prompt();
+      try {
+        await installPromptEvent.userChoice;
+      } catch {
+        // ignore
+      }
+      setInstallPromptEvent(null);
+      return;
+    }
+
+    setInstallHelpOpen(true);
+  };
+
+  const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent || "");
+  const installHelpText = isStandalone
+    ? "האתר כבר נוסף למסך הבית במכשיר הזה."
+    : isIOS
+      ? "ב-iPhone או iPad פתחו את תפריט השיתוף בדפדפן, ואז בחרו 'Add to Home Screen'."
+      : "במכשירי Android או בדפדפנים תומכים, לחצו על הכפתור כאן או פתחו את תפריט הדפדפן ובחרו 'Install app' / 'Add to Home Screen'.";
+
   return (
     <div dir="rtl" className={`min-h-screen bg-gradient-to-b ${theme.shell} text-slate-900 transition-colors duration-500`}>
       <div className="japan-bg" />
@@ -533,7 +597,7 @@ export default function JapanWithTheShmoops() {
                     <Badge className="rounded-full border border-white/70 bg-white/80 px-4 py-1.5 text-sm text-slate-700 backdrop-blur">14–31 במאי 2026</Badge>
                   </div>
                   <div>
-                    <h1 className="text-4xl font-black tracking-tight text-slate-900 md:text-6xl">יפן עם השמופים</h1>
+                    <h1 className="text-4xl font-black tracking-tight text-slate-900 md:text-6xl">מסלול צבעוני, נעים וברוח יפן</h1>
                   </div>
                   <div className="flex flex-wrap gap-3">
                     <QuickPill icon={CalendarDays} text={`${itinerary.length} ימי טיול`} />
@@ -565,7 +629,6 @@ export default function JapanWithTheShmoops() {
               <div className="text-xs font-semibold text-slate-500">יום נבחר</div>
               <div className="truncate text-sm font-bold text-slate-900 md:text-base">{day.label} · {day.area}</div>
             </div>
-            <div className="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 md:block">{visibleDays.length} ימים</div>
           </div>
         </div>
 
@@ -639,6 +702,7 @@ export default function JapanWithTheShmoops() {
                   </button>
                 </div>
 
+
                 <div>
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
@@ -665,6 +729,94 @@ export default function JapanWithTheShmoops() {
                     })}
                   </div>
                 </div>
+
+                <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm">
+                  <div className="flex items-start gap-3">
+                    <img
+                      src="/icons/icon-192.png"
+                      alt="אייקון הוספה למסך הבית"
+                      className="h-14 w-14 rounded-2xl border border-slate-200 object-cover shadow-sm"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex items-center gap-2 text-sm font-bold text-slate-800">
+                        <Download className="h-4 w-4" />
+                        הוספה למסך הבית
+                      </div>
+                      <div className="text-sm leading-6 text-slate-500">
+                        הוספת קיצור דרך למסלול ישירות למסך הבית, לגישה מהירה ונוחה בזמן הטיול.
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={handleAddToHomeScreen}
+                      className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-l px-4 py-2 text-sm font-medium text-white shadow-lg ${theme.accent}`}
+                    >
+                      {isStandalone ? "כבר נוסף" : "הוספה למסך הבית"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setInstallHelpOpen(true)}
+                      className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 transition hover:border-slate-300"
+                    >
+                      הוראות
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {installHelpOpen && (
+          <div className="fixed inset-0 z-[60]">
+            <button
+              type="button"
+              className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]"
+              onClick={() => setInstallHelpOpen(false)}
+              aria-label="סגור חלון הוספה למסך הבית"
+            />
+            <div className="absolute inset-x-4 top-1/2 mx-auto w-full max-w-md -translate-y-1/2 rounded-[1.75rem] border border-white/70 bg-white/95 p-5 shadow-2xl backdrop-blur-xl">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-lg font-black text-slate-900">הוספה למסך הבית</div>
+                  <div className="mt-1 text-sm leading-6 text-slate-500">{installHelpText}</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setInstallHelpOpen(false)}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700"
+                  aria-label="סגור"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {!isStandalone && !installPromptEvent ? (
+                <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600">
+                  טיפ: אם לא מופיע חלון התקנה אוטומטי, אפשר להשתמש בתפריט הדפדפן או בתפריט השיתוף של המכשיר.
+                </div>
+              ) : null}
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                {!isStandalone ? (
+                  <button
+                    type="button"
+                    onClick={handleAddToHomeScreen}
+                    className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-l px-4 py-2 text-sm font-medium text-white shadow-lg ${theme.accent}`}
+                  >
+                    <Home className="h-4 w-4" />
+                    {installPromptEvent ? "התקן עכשיו" : "נסה להוסיף"}
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => setInstallHelpOpen(false)}
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600"
+                >
+                  סגור
+                </button>
               </div>
             </div>
           </div>
