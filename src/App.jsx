@@ -22,27 +22,58 @@ import {
   X,
   Train,
   Trash2,
+  Star,
+  Navigation,
+  Copy,
+  Route,
+  Tag,
+  Users,
+  Plane,
+  ListChecks,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
+const packingCategories = [
+  { key: "documents", title: "מסמכים וכסף", icon: "🧾", hint: "כל מה שחייב להיות בשליפה בשדה ובמלון" },
+  { key: "electronics", title: "אלקטרוניקה", icon: "🔌", hint: "טעינה, אינטרנט וגיבויים לימים ארוכים" },
+  { key: "clothing", title: "בגדים ונעליים", icon: "👟", hint: "שכבות קלות, הליכה וגשם אביבי" },
+  { key: "health", title: "בריאות וטואלטיקה", icon: "🧴", hint: "תרופות, עזרה ראשונה ותיק רחצה" },
+  { key: "day-bag", title: "תיק יום לטיול", icon: "🎒", hint: "מה שיוצא איתכם בכל בוקר" },
+  { key: "pre-flight", title: "לפני הטיסה", icon: "✈️", hint: "משימות שסוגרים לפני שמגיעים לנתב״ג" },
+  { key: "personal", title: "אישי ותוספות", icon: "✨", hint: "כל דבר מיוחד שלכם" },
+];
+
 const defaultPackingItems = [
-  { id: "passport", text: "דרכונים", packed: false },
-  { id: "flight-docs", text: "כרטיסי טיסה ומסמכי הזמנות", packed: false },
-  { id: "yen-cash", text: "יין יפני / מזומן ראשוני", packed: false },
-  { id: "credit-cards", text: "כרטיסי אשראי", packed: false },
-  { id: "travel-insurance", text: "ביטוח נסיעות", packed: false },
-  { id: "sim-esim", text: "eSIM / סים / אינטרנט", packed: false },
-  { id: "chargers", text: "מטענים וכבלים", packed: false },
-  { id: "adapter", text: "מתאם חשמל ליפן", packed: false },
-  { id: "power-bank", text: "סוללת גיבוי", packed: false },
-  { id: "meds", text: "תרופות קבועות ועזרה ראשונה", packed: false },
-  { id: "walking-shoes", text: "נעלי הליכה נוחות", packed: false },
-  { id: "rain-jacket", text: "מעיל גשם / מטרייה מתקפלת", packed: false },
-  { id: "toiletries", text: "תיק רחצה", packed: false },
-  { id: "laundry", text: "שק כביסה", packed: false },
+  { id: "passport", text: "דרכונים", category: "documents", required: true, owner: "כולם", packed: false },
+  { id: "flight-docs", text: "כרטיסי טיסה ומסמכי הזמנות", category: "documents", required: true, owner: "כולם", packed: false },
+  { id: "hotel-docs", text: "אישורי מלונות ורכב להשכרה", category: "documents", required: true, owner: "כולם", packed: false },
+  { id: "yen-cash", text: "יין יפני / מזומן ראשוני", category: "documents", required: true, owner: "כולם", packed: false },
+  { id: "credit-cards", text: "כרטיסי אשראי + קוד סודי", category: "documents", required: true, owner: "כולם", packed: false },
+  { id: "travel-insurance", text: "ביטוח נסיעות מודפס/שמורה בטלפון", category: "documents", required: true, owner: "כולם", packed: false },
+  { id: "sim-esim", text: "eSIM / סים / אינטרנט", category: "electronics", required: true, owner: "כולם", packed: false },
+  { id: "chargers", text: "מטענים וכבלים", category: "electronics", required: true, owner: "כולם", packed: false },
+  { id: "adapter", text: "מתאם חשמל ליפן", category: "electronics", required: true, owner: "כולם", packed: false },
+  { id: "power-bank", text: "סוללת גיבוי", category: "electronics", required: true, owner: "כולם", packed: false },
+  { id: "headphones", text: "אוזניות לטיסות ולרכבות", category: "electronics", required: false, owner: "אישי", packed: false },
+  { id: "walking-shoes", text: "נעלי הליכה נוחות", category: "clothing", required: true, owner: "אישי", packed: false },
+  { id: "rain-jacket", text: "מעיל גשם / מטרייה מתקפלת", category: "clothing", required: false, owner: "אישי", packed: false },
+  { id: "layers", text: "שכבות קלות לערב קריר", category: "clothing", required: false, owner: "אישי", packed: false },
+  { id: "laundry", text: "שק כביסה", category: "clothing", required: false, owner: "כולם", packed: false },
+  { id: "meds", text: "תרופות קבועות ועזרה ראשונה", category: "health", required: true, owner: "אישי", packed: false },
+  { id: "toiletries", text: "תיק רחצה", category: "health", required: true, owner: "אישי", packed: false },
+  { id: "plasters", text: "פלסטרים / קומפיד לנעלי הליכה", category: "health", required: false, owner: "כולם", packed: false },
+  { id: "day-passport", text: "דרכון/צילום דרכון בתיק יום", category: "day-bag", required: true, owner: "כולם", packed: false },
+  { id: "day-bottle", text: "בקבוק מים קטן", category: "day-bag", required: false, owner: "אישי", packed: false },
+  { id: "day-umbrella", text: "מטרייה מתקפלת בתיק יום", category: "day-bag", required: false, owner: "כולם", packed: false },
+  { id: "day-snacks", text: "נשנושים לנסיעות ארוכות", category: "day-bag", required: false, owner: "כולם", packed: false },
+  { id: "visit-japan-web", text: "Visit Japan Web מוכן עם QR", category: "pre-flight", required: true, owner: "כולם", packed: false },
+  { id: "tickets", text: "כרטיסים לאטרקציות שמורות בטלפון", category: "pre-flight", required: true, owner: "כולם", packed: false },
+  { id: "offline-maps", text: "הורדת מפות ואזורים ב-Google Maps", category: "pre-flight", required: true, owner: "כולם", packed: false },
+  { id: "train-bus", text: "בדיקת רכבות/אוטובוסים שצריך להזמין מראש", category: "pre-flight", required: true, owner: "כולם", packed: false },
+  { id: "add-home-screen", text: "הוספת האתר למסך הבית", category: "pre-flight", required: false, owner: "כולם", packed: false },
 ];
 
 const hotels = [
@@ -425,6 +456,131 @@ const formatMoney = (value) =>
   }).format(value);
 
 const mapUrl = (query) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+const mapDirectionsUrl = (query, travelMode = "walking") =>
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}&travelmode=${travelMode}`;
+
+const packingFilters = [
+  { key: "all", label: "הכל" },
+  { key: "missing", label: "חסר" },
+  { key: "packed", label: "נארז" },
+  { key: "required", label: "חובה" },
+];
+
+function getCategoryMeta(categoryKey) {
+  return packingCategories.find((category) => category.key === categoryKey) || packingCategories.at(-1);
+}
+
+function inferPackingCategory(text = "") {
+  const lower = text.toLowerCase();
+  if (/דרכון|טיסה|ביטוח|אשראי|יין|מזומן|הזמנה/.test(lower)) return "documents";
+  if (/מטען|כבל|סים|esim|סוללה|חשמל|אוזנ/.test(lower)) return "electronics";
+  if (/נעל|בגד|מעיל|כביסה|גרב|חולצה|מטרייה/.test(lower)) return "clothing";
+  if (/תרופ|רחצה|פלסטר|קרם|טואלטיקה/.test(lower)) return "health";
+  if (/visit japan|מפות|כרטיסים|מסך הבית|רכבות|אוטובוסים/.test(lower)) return "pre-flight";
+  return "personal";
+}
+
+function normalizePackingItems(items) {
+  const savedItems = Array.isArray(items) && items.length ? items : [];
+  const savedById = new Map(savedItems.map((item) => [item.id, item]));
+  const defaultsById = new Map(defaultPackingItems.map((item) => [item.id, item]));
+  const merged = savedItems.length
+    ? [
+        ...defaultPackingItems.map((defaults) => ({ ...defaults, ...(savedById.get(defaults.id) || {}) })),
+        ...savedItems.filter((item) => !defaultsById.has(item.id)),
+      ]
+    : defaultPackingItems;
+
+  return merged.map((item) => {
+    const defaults = defaultsById.get(item.id) || {};
+    return {
+      id: item.id || `packing-${globalThis.crypto?.randomUUID?.() || Date.now()}`,
+      text: item.text || defaults.text || "פריט ללא שם",
+      category: item.category || defaults.category || inferPackingCategory(item.text),
+      required: typeof item.required === "boolean" ? item.required : Boolean(defaults.required),
+      owner: item.owner || defaults.owner || "כולם",
+      packed: Boolean(item.packed),
+    };
+  });
+}
+
+function parseTripDate(dateString) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function getDaysBetween(fromDate, toDate) {
+  const start = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+  const end = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
+  return Math.round((end - start) / 86400000);
+}
+
+function getTripStatus(now = new Date()) {
+  const start = parseTripDate(itinerary[0].date);
+  const end = parseTripDate(itinerary.at(-1).date);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const todayDay = itinerary.find((entry) => entry.date === todayIso);
+
+  if (today < start) {
+    const daysLeft = getDaysBetween(today, start);
+    return {
+      mode: "before",
+      title: `נותרו ${daysLeft} ימים לטיול`,
+      subtitle: "זה הזמן לסגור הכנות, כרטיסים ואריזה בלי לחץ.",
+      actionLabel: "פתח הכנות ואריזה",
+      todayDate: null,
+      daysLeft,
+    };
+  }
+
+  if (today > end) {
+    return {
+      mode: "after",
+      title: "הטיול הסתיים — נשארו הזיכרונות",
+      subtitle: "אפשר עדיין להשתמש באתר לסיכומים, תמונות וקניות שחוזרים אליהן.",
+      actionLabel: "חזרה למסלול",
+      todayDate: null,
+      daysLeft: 0,
+    };
+  }
+
+  return {
+    mode: "during",
+    title: todayDay ? `היום בטיול: ${todayDay.label}` : "היום בטיול",
+    subtitle: todayDay ? `${todayDay.city} · ${todayDay.area}` : "פתחו את היום הנוכחי וקבלו גישה מהירה למפות וללינה.",
+    actionLabel: "פתח את היום",
+    todayDate: todayDay?.date || null,
+    daysLeft: 0,
+  };
+}
+
+function getActivityMeta(item) {
+  const text = `${item.title || ""} ${item.notes || ""} ${item.time || ""} ${(item.extras || []).join(" ")}`.toLowerCase();
+  const tags = [];
+  if (/shopping|shop|store|קניות|don quijote|pokemon|mugiwara|animate|sega|round|ginza|shibuya|akihabara|ikebukuro|nishiki|market/.test(text)) tags.push("קניות");
+  if (/נסיעה|שינקנסן|רכבת|אוטובוס|airport|שדה|station|תחנה|travel to|הגעה|יציאה/.test(text)) tags.push("נסיעה");
+  if (/temple|shrine|castle|museum|מקדש|מוזיאון|טירה|senso|fushimi|byōdō|nintendo museum/.test(text)) tags.push("תרבות");
+  if (/teamlab|disney|universal|fuji-q|harry potter|studio|joypolis|sumo|כרטיס/.test(text)) tags.push("כרטיסים");
+  if (/cafe|restaurant|ארוחת|food|שוק|סובה|hidagyu/.test(text)) tags.push("אוכל");
+
+  let priority = "מומלץ";
+  if (/נחיתה|flight|departure|airport|שינקנסן|החזרת הרכב|איסוף רכב|לינה|travel to airport|יציאה|הגעה/.test(text)) {
+    priority = "חובה";
+  } else if (item.extras?.length || /גמיש|אפשר|free time|revisit|השלמות/.test(text)) {
+    priority = "אם יש זמן";
+  }
+
+  return { priority, tags: [...new Set(tags)].slice(0, 4) };
+}
+
+function getDayDoneCount(entry, doneMap) {
+  if (entry.parts?.length) {
+    return entry.parts.reduce((sum, part) => sum + part.items.filter((_, index) => doneMap[getItemStorageKey(entry, index, part.key)]).length, 0);
+  }
+  return (entry.items || []).filter((_, index) => doneMap[getItemStorageKey(entry, index)]).length;
+}
+
 
 function getHotelForDate(date) {
   const day = Number(date.split("-").at(-1));
@@ -471,12 +627,16 @@ export default function JapanWithTheShmoops() {
   const [installHelpOpen, setInstallHelpOpen] = useState(false);
   const [packingOpen, setPackingOpen] = useState(false);
   const [newPackingText, setNewPackingText] = useState("");
+  const [newPackingCategory, setNewPackingCategory] = useState("personal");
+  const [newPackingRequired, setNewPackingRequired] = useState(false);
+  const [packingFilter, setPackingFilter] = useState("missing");
+  const [expandedPackingCategories, setExpandedPackingCategories] = useState(() => new Set(["documents", "pre-flight", "electronics"]));
   const [packingItems, setPackingItems] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("japan-trip-packing-list") || "null");
-      return Array.isArray(saved) && saved.length ? saved : defaultPackingItems;
+      return normalizePackingItems(saved);
     } catch {
-      return defaultPackingItems;
+      return normalizePackingItems(defaultPackingItems);
     }
   });
   const [isStandalone, setIsStandalone] = useState(false);
@@ -528,6 +688,14 @@ export default function JapanWithTheShmoops() {
     };
   }, []);
 
+  const tripStatus = useMemo(() => getTripStatus(), []);
+
+  useEffect(() => {
+    if (tripStatus.todayDate) {
+      setSelectedDate(tripStatus.todayDate);
+    }
+  }, [tripStatus.todayDate]);
+
   const visibleDays = useMemo(() => {
     return itinerary.filter((day) => {
       const matchesGroup = selectedGroup === "הכל" || day.group === selectedGroup;
@@ -557,10 +725,14 @@ export default function JapanWithTheShmoops() {
   const theme = themes[day.group] || themes["טוקיו"];
   const activePart = day.parts?.find((part) => part.key === selectedPartKey) || day.parts?.[0] || null;
   const currentItems = activePart ? activePart.items : day.items;
+  const totalDayActivities = getFlatItems(day).length;
   const totalActivities = itinerary.reduce((sum, entry) => sum + getFlatItems(entry).length, 0);
   const progressCount = activePart
     ? activePart.items.filter((_, index) => done[getItemStorageKey(day, index, activePart.key)]).length
-    : day.items.filter((_, index) => done[getItemStorageKey(day, index)]).length;
+    : (day.items || []).filter((_, index) => done[getItemStorageKey(day, index)]).length;
+  const dayProgressCount = getDayDoneCount(day, done);
+  const packedCount = packingItems.filter((item) => item.packed).length;
+  const requiredMissingCount = packingItems.filter((item) => item.required && !item.packed).length;
   const hotel = getHotelForDate(day.date);
   const activeIndex = itinerary.findIndex((entry) => entry.date === day.date);
 
@@ -575,6 +747,26 @@ export default function JapanWithTheShmoops() {
     setTimeout(scrollSelectedIntoView, 10);
   };
 
+  const openToday = () => {
+    if (tripStatus.todayDate) {
+      selectDay(tripStatus.todayDate);
+      return;
+    }
+    scrollSelectedIntoView();
+  };
+
+  const scrollToSection = (id) => {
+    const target = document.getElementById(id);
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const openCurrentMap = () => {
+    const firstMapItem = currentItems.find((item) => item.mapQuery);
+    if (firstMapItem?.mapQuery) {
+      window.open(mapUrl(firstMapItem.mapQuery), "_blank", "noopener,noreferrer");
+    }
+  };
+
   const toggleDone = (index, partKey = null) => {
     const key = getItemStorageKey(day, index, partKey);
     setDone((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -584,11 +776,29 @@ export default function JapanWithTheShmoops() {
     setPackingItems((prev) => prev.map((item) => item.id === id ? { ...item, packed: !item.packed } : item));
   };
 
+  const togglePackingCategory = (categoryKey) => {
+    setExpandedPackingCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(categoryKey)) next.delete(categoryKey);
+      else next.add(categoryKey);
+      return next;
+    });
+  };
+
   const addPackingItem = () => {
     const text = newPackingText.trim();
     if (!text) return;
-    setPackingItems((prev) => [{ id: "packing-" + Date.now(), text, packed: false }, ...prev]);
+    setPackingItems((prev) => [{
+      id: "packing-" + Date.now(),
+      text,
+      category: newPackingCategory,
+      required: newPackingRequired,
+      owner: "כולם",
+      packed: false,
+    }, ...prev]);
+    setExpandedPackingCategories((prev) => new Set([...prev, newPackingCategory]));
     setNewPackingText("");
+    setNewPackingRequired(false);
   };
 
   const deletePackingItem = (id) => {
@@ -631,7 +841,7 @@ export default function JapanWithTheShmoops() {
       : "במכשירי Android או בדפדפנים תומכים, לחצו על הכפתור כאן או פתחו את תפריט הדפדפן ובחרו 'Install app' / 'Add to Home Screen'.";
 
   return (
-    <div dir="rtl" className={`min-h-screen bg-gradient-to-b ${theme.shell} text-slate-900 transition-colors duration-500`}>
+    <div dir="rtl" className={`min-h-screen bg-gradient-to-b ${theme.shell} pb-24 text-slate-900 transition-colors duration-500 md:pb-0`}>
       <div className="japan-bg" />
       <div className="mx-auto max-w-7xl px-4 py-5 md:px-6 md:py-8">
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
@@ -646,19 +856,20 @@ export default function JapanWithTheShmoops() {
                     <Badge className="rounded-full border border-white/70 bg-white/80 px-4 py-1.5 text-sm text-slate-700 backdrop-blur">14–31 במאי 2026</Badge>
                   </div>
                   <div>
-                    <h1 className="text-4xl font-black tracking-tight text-slate-900 md:text-6xl">יפן עם השמופים</h1>
+                    <h1 className="text-4xl font-black tracking-tight text-slate-900 md:text-6xl">מסלול צבעוני, נעים וברוח יפן</h1>
                   </div>
                   <div className="flex flex-wrap gap-3">
                     <QuickPill icon={CalendarDays} text={`${itinerary.length} ימי טיול`} />
                     <QuickPill icon={Mountain} text={`${routeStops.length} תחנות במסלול`} />
+                    <QuickPill icon={ListChecks} text={`${totalActivities} פעילויות`} />
                     <QuickPill icon={BedDouble} text={`${hotels.length} לינות`} />
                   </div>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
                   <StatCard title="יום נבחר" value={day.label} sub={day.area} accent={theme.accent} />
-                  <StatCard title="פעילויות" value={`${day.items.length}`} sub={`${progressCount} סומנו`} accent={theme.accent} />
-                  <StatCard title="עלות לינות" value={formatMoney(hotels.reduce((sum, entry) => sum + entry.cost, 0))} sub="סה״כ הזמנות" accent={theme.accent} />
+                  <StatCard title="פעילויות ביום" value={`${totalDayActivities}`} sub={`${dayProgressCount} סומנו`} accent={theme.accent} />
+                  <StatCard title="אריזות" value={`${packedCount}/${packingItems.length}`} sub={requiredMissingCount ? `${requiredMissingCount} פריטי חובה חסרים` : "כל פריטי החובה נארזו"} accent={theme.accent} />
                 </div>
               </div>
             </CardContent>
@@ -680,6 +891,22 @@ export default function JapanWithTheShmoops() {
             </div>
           </div>
         </div>
+
+        <TodayFocusCard
+          status={tripStatus}
+          day={day}
+          hotel={hotel}
+          currentItems={currentItems}
+          progressCount={progressCount}
+          requiredMissingCount={requiredMissingCount}
+          onPrimary={() => {
+            if (tripStatus.mode === "before") setPackingOpen(true);
+            else openToday();
+          }}
+          onPacking={() => setPackingOpen(true)}
+          onMap={openCurrentMap}
+          accentClass={theme.accent}
+        />
 
         {menuOpen && (
           <div className="fixed inset-0 z-50">
@@ -732,7 +959,7 @@ export default function JapanWithTheShmoops() {
                     </span>
                     <span>
                       <span className="block text-sm font-black text-slate-900">צ׳ק ליסט אריזות לטיול</span>
-                      <span className="mt-1 block text-sm text-slate-500">הוספה, מחיקה וסימון פריטים. נשמר אוטומטית.</span>
+                      <span className="mt-1 block text-sm text-slate-500">קטגוריות, חובה/חסר וסימון מהיר. נשמר אוטומטית.</span>
                     </span>
                   </span>
                   <ChevronLeft className="h-5 w-5 text-emerald-700" />
@@ -841,8 +1068,16 @@ export default function JapanWithTheShmoops() {
         {packingOpen && (
           <PackingChecklistModal
             items={packingItems}
+            filter={packingFilter}
+            setFilter={setPackingFilter}
+            expandedCategories={expandedPackingCategories}
+            onToggleCategory={togglePackingCategory}
             newItemText={newPackingText}
             setNewItemText={setNewPackingText}
+            newItemCategory={newPackingCategory}
+            setNewItemCategory={setNewPackingCategory}
+            newItemRequired={newPackingRequired}
+            setNewItemRequired={setNewPackingRequired}
             onAdd={addPackingItem}
             onToggle={togglePackingItem}
             onDelete={deletePackingItem}
@@ -1035,7 +1270,7 @@ export default function JapanWithTheShmoops() {
               </CardContent>
             </Card>
 
-            <Card className="side-card overflow-hidden border-0">
+            <Card id="lodging-summary" className="side-card scroll-mt-24 overflow-hidden border-0">
               <CardHeader className="p-5 pb-2">
                 <CardTitle className="text-lg font-bold">לינה מתאימה ליום הזה</CardTitle>
               </CardHeader>
@@ -1083,7 +1318,7 @@ export default function JapanWithTheShmoops() {
               </CardContent>
             </Card>
 
-            <Card className="side-card overflow-hidden border-0">
+            <Card id="route-summary" className="side-card scroll-mt-24 overflow-hidden border-0">
               <CardHeader className="p-5 pb-2">
                 <CardTitle className="text-lg font-bold">ציר המסלול</CardTitle>
               </CardHeader>
@@ -1103,7 +1338,99 @@ export default function JapanWithTheShmoops() {
           </aside>
         </div>
       </div>
+
+      <BottomNavigation
+        onToday={openToday}
+        onRoute={() => setMenuOpen(true)}
+        onMap={openCurrentMap}
+        onPacking={() => setPackingOpen(true)}
+        onLodging={() => scrollToSection("lodging-summary")}
+        accentClass={theme.accent}
+      />
     </div>
+  );
+}
+
+function TodayFocusCard({ status, day, hotel, currentItems, progressCount, requiredMissingCount, onPrimary, onPacking, onMap, accentClass }) {
+  const nextItem = currentItems.find((item) => item.mapQuery) || currentItems[0];
+
+  return (
+    <Card className="mt-5 overflow-hidden rounded-[1.75rem] border-0 bg-white/85 shadow-lg backdrop-blur-xl">
+      <CardContent className="p-4 md:p-5">
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+          <div className="flex items-start gap-3">
+            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${accentClass} text-white shadow-lg`}>
+              {status.mode === "before" ? <Plane className="h-5 w-5" /> : <CalendarDays className="h-5 w-5" />}
+            </div>
+            <div className="min-w-0">
+              <div className="text-lg font-black text-slate-900">{status.title}</div>
+              <div className="mt-1 text-sm leading-6 text-slate-500">{status.subtitle}</div>
+              <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold text-slate-600">
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">לינה: {hotel.city}</span>
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">התקדמות היום: {progressCount}/{currentItems.length}</span>
+                {nextItem ? <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">הבא: {nextItem.time || "גמיש"}</span> : null}
+                {requiredMissingCount ? <span className="rounded-full border border-rose-100 bg-rose-50 px-3 py-1.5 text-rose-700">{requiredMissingCount} פריטי חובה חסרים</span> : null}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 md:justify-end">
+            <button
+              type="button"
+              onClick={onPrimary}
+              className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-l px-4 py-2 text-sm font-bold text-white shadow-lg ${accentClass}`}
+            >
+              <CalendarDays className="h-4 w-4" />
+              {status.actionLabel}
+            </button>
+            <button
+              type="button"
+              onClick={onMap}
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700"
+            >
+              <MapPin className="h-4 w-4" />
+              מפה מהירה
+            </button>
+            <button
+              type="button"
+              onClick={onPacking}
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700"
+            >
+              <ClipboardList className="h-4 w-4" />
+              אריזות
+            </button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BottomNavigation({ onToday, onRoute, onMap, onPacking, onLodging, accentClass }) {
+  const items = [
+    { label: "היום", icon: CalendarDays, onClick: onToday, primary: true },
+    { label: "מסלול", icon: Menu, onClick: onRoute },
+    { label: "מפה", icon: MapPin, onClick: onMap },
+    { label: "אריזות", icon: ClipboardList, onClick: onPacking },
+    { label: "לינות", icon: BedDouble, onClick: onLodging },
+  ];
+
+  return (
+    <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[1.6rem] border border-white/70 bg-white/90 p-2 shadow-2xl backdrop-blur-xl md:hidden" aria-label="ניווט מהיר">
+      <div className="grid grid-cols-5 gap-1">
+        {items.map(({ label, icon: Icon, onClick, primary }) => (
+          <button
+            key={label}
+            type="button"
+            onClick={onClick}
+            className={`flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-[1.1rem] px-2 text-xs font-black transition ${primary ? `bg-gradient-to-l ${accentClass} text-white shadow-lg` : "text-slate-600 hover:bg-slate-100"}`}
+          >
+            <Icon className="h-5 w-5" />
+            {label}
+          </button>
+        ))}
+      </div>
+    </nav>
   );
 }
 
@@ -1136,9 +1463,27 @@ function MetaChip({ icon: Icon, text }) {
 }
 
 function ActivityList({ items, day, done, toggleDone, accentClass, partKey = null }) {
+  const [copiedKey, setCopiedKey] = useState(null);
+
+  const copyLocation = async (text, key) => {
+    try {
+      await navigator.clipboard?.writeText(text);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 1400);
+    } catch {
+      setCopiedKey(null);
+    }
+  };
+
   return items.map((item, index) => {
     const storageKey = getItemStorageKey(day, index, partKey);
     const isDone = !!done[storageKey];
+    const meta = getActivityMeta(item);
+    const isMust = meta.priority === "חובה";
+    const isOptional = meta.priority === "אם יש זמן";
+    const itemKey = `${partKey || "main"}-${index}`;
+    const mapQuery = item.mapQuery || item.title;
+
     return (
       <section key={`${partKey || "main"}-${item.title}-${index}`} className={`activity-card ${isDone ? "activity-card-done" : ""}`}>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -1148,8 +1493,28 @@ function ActivityList({ items, day, done, toggleDone, accentClass, partKey = nul
               <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
                 <MetaChip icon={Clock3} text={item.time || "ללא שעה"} />
                 {item.transport ? <MetaChip icon={Train} text={item.transport} /> : null}
+                <span className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm font-bold ${
+                  isMust
+                    ? "border-rose-200 bg-rose-50 text-rose-700"
+                    : isOptional
+                      ? "border-amber-200 bg-amber-50 text-amber-700"
+                      : "border-emerald-200 bg-emerald-50 text-emerald-700"
+                }`}>
+                  <Star className="h-4 w-4" />
+                  {meta.priority}
+                </span>
               </div>
               <h3 className="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">{item.title}</h3>
+              {meta.tags.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {meta.tags.map((tag) => (
+                    <span key={`${itemKey}-${tag}`} className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">
+                      <Tag className="h-3.5 w-3.5" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
               {item.notes ? <p className="max-w-3xl text-[15px] leading-8 text-slate-600">{item.notes}</p> : null}
               {item.extras?.length ? (
                 <div>
@@ -1164,7 +1529,7 @@ function ActivityList({ items, day, done, toggleDone, accentClass, partKey = nul
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-wrap gap-2 lg:w-[220px] lg:justify-end">
+          <div className="flex shrink-0 flex-wrap gap-2 lg:w-[270px] lg:justify-end">
             <Button
               variant={isDone ? "default" : "outline"}
               size="sm"
@@ -1174,15 +1539,40 @@ function ActivityList({ items, day, done, toggleDone, accentClass, partKey = nul
               {isDone ? <CheckCircle2 className="ml-1 h-4 w-4" /> : <Circle className="ml-1 h-4 w-4" />}
               {isDone ? "בוצע" : "סמן"}
             </Button>
-            {item.mapQuery ? (
-              <a
-                href={mapUrl(item.mapQuery)}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-700 transition hover:border-slate-300"
-              >
-                <MapPin className="ml-1 h-4 w-4" /> מפה
-              </a>
+            {mapQuery ? (
+              <>
+                <a
+                  href={mapUrl(mapQuery)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-700 transition hover:border-slate-300"
+                >
+                  <MapPin className="ml-1 h-4 w-4" /> מקום
+                </a>
+                <a
+                  href={mapDirectionsUrl(mapQuery, "walking")}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-700 transition hover:border-slate-300"
+                >
+                  <Navigation className="ml-1 h-4 w-4" /> נווט
+                </a>
+                <a
+                  href={mapDirectionsUrl(mapQuery, "transit")}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-700 transition hover:border-slate-300"
+                >
+                  <Route className="ml-1 h-4 w-4" /> תחבורה
+                </a>
+                <button
+                  type="button"
+                  onClick={() => copyLocation(mapQuery, itemKey)}
+                  className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-700 transition hover:border-slate-300"
+                >
+                  <Copy className="ml-1 h-4 w-4" /> {copiedKey === itemKey ? "הועתק" : "העתק"}
+                </button>
+              </>
             ) : null}
           </div>
         </div>
@@ -1191,9 +1581,38 @@ function ActivityList({ items, day, done, toggleDone, accentClass, partKey = nul
   });
 }
 
-function PackingChecklistModal({ items, newItemText, setNewItemText, onAdd, onToggle, onDelete, onClose, onBackToMenu, accentClass }) {
+function PackingChecklistModal({
+  items,
+  filter,
+  setFilter,
+  expandedCategories,
+  onToggleCategory,
+  newItemText,
+  setNewItemText,
+  newItemCategory,
+  setNewItemCategory,
+  newItemRequired,
+  setNewItemRequired,
+  onAdd,
+  onToggle,
+  onDelete,
+  onClose,
+  onBackToMenu,
+  accentClass,
+}) {
   const packedCount = items.filter((item) => item.packed).length;
   const totalCount = items.length;
+  const requiredCount = items.filter((item) => item.required).length;
+  const requiredPackedCount = items.filter((item) => item.required && item.packed).length;
+
+  const filterItem = (item) => {
+    if (filter === "missing") return !item.packed;
+    if (filter === "packed") return item.packed;
+    if (filter === "required") return item.required;
+    return true;
+  };
+
+  const visibleItems = items.filter(filterItem);
 
   return (
     <div className="fixed inset-0 z-[60]">
@@ -1203,7 +1622,7 @@ function PackingChecklistModal({ items, newItemText, setNewItemText, onAdd, onTo
         onClick={onClose}
         aria-label="סגור צ׳ק ליסט אריזות"
       />
-      <div className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-white/60 bg-[#fffaf6]/95 shadow-2xl backdrop-blur-2xl">
+      <div className="absolute right-0 top-0 flex h-full w-full max-w-xl flex-col border-l border-white/60 bg-[#fffaf6]/95 shadow-2xl backdrop-blur-2xl">
         <div className="border-b border-slate-200 bg-[#fffaf6]/95 px-5 py-4 backdrop-blur">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -1211,7 +1630,7 @@ function PackingChecklistModal({ items, newItemText, setNewItemText, onAdd, onTo
                 <ClipboardList className="h-5 w-5 text-emerald-700" />
                 צ׳ק ליסט אריזות לטיול
               </div>
-              <div className="mt-1 text-sm leading-6 text-slate-500">הפריטים, הסימונים והשינויים נשמרים אוטומטית במכשיר.</div>
+              <div className="mt-1 text-sm leading-6 text-slate-500">מחולק לפי קטגוריות, עם סינון מהיר למה שחסר ומה שחובה.</div>
             </div>
             <button
               type="button"
@@ -1222,13 +1641,25 @@ function PackingChecklistModal({ items, newItemText, setNewItemText, onAdd, onTo
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="mt-4 rounded-[1.4rem] border border-emerald-100 bg-emerald-50 px-4 py-3">
-            <div className="flex items-center justify-between gap-3 text-sm font-bold text-emerald-900">
-              <span>התקדמות אריזה</span>
-              <span>{packedCount}/{totalCount}</span>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-[1.4rem] border border-emerald-100 bg-emerald-50 px-4 py-3">
+              <div className="flex items-center justify-between gap-3 text-sm font-bold text-emerald-900">
+                <span>התקדמות אריזה</span>
+                <span>{packedCount}/{totalCount}</span>
+              </div>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-white">
+                <div className={`h-full rounded-full bg-gradient-to-l ${accentClass}`} style={{ width: totalCount ? `${(packedCount / totalCount) * 100}%` : "0%" }} />
+              </div>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-white">
-              <div className={`h-full rounded-full bg-gradient-to-l ${accentClass}`} style={{ width: totalCount ? `${(packedCount / totalCount) * 100}%` : "0%" }} />
+            <div className="rounded-[1.4rem] border border-amber-100 bg-amber-50 px-4 py-3">
+              <div className="flex items-center justify-between gap-3 text-sm font-bold text-amber-900">
+                <span>פריטי חובה</span>
+                <span>{requiredPackedCount}/{requiredCount}</span>
+              </div>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-white">
+                <div className="h-full rounded-full bg-amber-500 transition-all" style={{ width: requiredCount ? `${(requiredPackedCount / requiredCount) * 100}%` : "0%" }} />
+              </div>
             </div>
           </div>
         </div>
@@ -1245,57 +1676,146 @@ function PackingChecklistModal({ items, newItemText, setNewItemText, onAdd, onTo
         </div>
 
         <div className="flex-1 overflow-y-auto p-5">
-          <form
-            className="mb-4 flex gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              onAdd();
-            }}
-          >
-            <Input
-              className="h-12 rounded-2xl border-slate-200 bg-white shadow-inner"
-              placeholder="הוספת פריט חדש לרשימה"
-              value={newItemText}
-              onChange={(event) => setNewItemText(event.target.value)}
-            />
-            <Button type="submit" className={`h-12 rounded-2xl bg-gradient-to-l px-4 text-white shadow-lg ${accentClass}`}>
-              <Plus className="h-4 w-4" />
-              הוסף
-            </Button>
-          </form>
+          <div className="mb-4 rounded-[1.5rem] border border-slate-200 bg-white/90 p-3 shadow-sm">
+            <div className="mb-3 flex flex-wrap gap-2">
+              {packingFilters.map((option) => {
+                const active = filter === option.key;
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => setFilter(option.key)}
+                    className={`rounded-full border px-3.5 py-2 text-sm font-bold transition ${
+                      active
+                        ? `border-transparent bg-gradient-to-l ${accentClass} text-white shadow-md`
+                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+            <form
+              className="grid gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                onAdd();
+              }}
+            >
+              <Input
+                className="h-12 rounded-2xl border-slate-200 bg-white shadow-inner"
+                placeholder="הוספת פריט חדש לרשימה"
+                value={newItemText}
+                onChange={(event) => setNewItemText(event.target.value)}
+              />
+              <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
+                <select
+                  value={newItemCategory}
+                  onChange={(event) => setNewItemCategory(event.target.value)}
+                  className="h-12 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 outline-none"
+                >
+                  {packingCategories.map((category) => (
+                    <option key={category.key} value={category.key}>{category.icon} {category.title}</option>
+                  ))}
+                </select>
+                <label className="flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={newItemRequired}
+                    onChange={(event) => setNewItemRequired(event.target.checked)}
+                    className="h-4 w-4"
+                  />
+                  חובה
+                </label>
+                <Button type="submit" className={`h-12 rounded-2xl bg-gradient-to-l px-4 text-white shadow-lg ${accentClass}`}>
+                  <Plus className="h-4 w-4" />
+                  הוסף
+                </Button>
+              </div>
+            </form>
+          </div>
 
-          <div className="space-y-2">
-            {items.length ? items.map((item) => (
-              <div key={item.id} className={`flex items-center gap-3 rounded-2xl border px-3 py-3 shadow-sm transition ${item.packed ? "border-emerald-100 bg-emerald-50/80" : "border-slate-200 bg-white"}`}>
-                <button
-                  type="button"
-                  onClick={() => onToggle(item.id)}
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${item.packed ? "border-emerald-200 bg-emerald-600 text-white" : "border-slate-200 bg-white text-slate-500"}`}
-                  aria-label={item.packed ? "סמן כלא נארז" : "סמן כנארז"}
-                >
-                  {item.packed ? <CheckCircle2 className="h-5 w-5" /> : <Circle className="h-5 w-5" />}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onToggle(item.id)}
-                  className={`min-w-0 flex-1 text-right text-sm font-semibold leading-6 ${item.packed ? "text-emerald-900 line-through decoration-emerald-700/60" : "text-slate-800"}`}
-                >
-                  {item.text}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onDelete(item.id)}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-rose-100 bg-rose-50 text-rose-600 transition hover:bg-rose-100"
-                  aria-label="מחק פריט"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            )) : (
+          <div className="space-y-3">
+            {packingCategories.map((category) => {
+              const allCategoryItems = items.filter((item) => item.category === category.key);
+              const categoryItems = visibleItems.filter((item) => item.category === category.key);
+              if (!allCategoryItems.length) return null;
+              const categoryPacked = allCategoryItems.filter((item) => item.packed).length;
+              const isOpen = expandedCategories.has(category.key);
+              const categoryRequiredMissing = allCategoryItems.filter((item) => item.required && !item.packed).length;
+
+              return (
+                <section key={category.key} className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white/95 shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => onToggleCategory(category.key)}
+                    className="flex w-full items-center justify-between gap-3 px-4 py-4 text-right transition hover:bg-slate-50"
+                  >
+                    <span className="flex min-w-0 items-start gap-3">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-xl">{category.icon}</span>
+                      <span className="min-w-0">
+                        <span className="block text-base font-black text-slate-900">{category.title}</span>
+                        <span className="mt-1 block text-sm leading-6 text-slate-500">{category.hint}</span>
+                      </span>
+                    </span>
+                    <span className="flex shrink-0 flex-col items-end gap-1">
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-700">{categoryPacked}/{allCategoryItems.length}</span>
+                      {categoryRequiredMissing ? <span className="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700">{categoryRequiredMissing} חובה</span> : null}
+                    </span>
+                  </button>
+                  <div className="h-1.5 bg-slate-100">
+                    <div className={`h-full bg-gradient-to-l ${accentClass}`} style={{ width: allCategoryItems.length ? `${(categoryPacked / allCategoryItems.length) * 100}%` : "0%" }} />
+                  </div>
+
+                  {isOpen ? (
+                    <div className="space-y-2 p-3">
+                      {categoryItems.length ? categoryItems.map((item) => (
+                        <div key={item.id} className={`flex items-center gap-3 rounded-2xl border px-3 py-3 shadow-sm transition ${item.packed ? "border-emerald-100 bg-emerald-50/80" : "border-slate-200 bg-white"}`}>
+                          <button
+                            type="button"
+                            onClick={() => onToggle(item.id)}
+                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${item.packed ? "border-emerald-200 bg-emerald-600 text-white" : "border-slate-200 bg-white text-slate-500"}`}
+                            aria-label={item.packed ? "סמן כלא נארז" : "סמן כנארז"}
+                          >
+                            {item.packed ? <CheckCircle2 className="h-5 w-5" /> : <Circle className="h-5 w-5" />}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onToggle(item.id)}
+                            className={`min-w-0 flex-1 text-right text-sm font-semibold leading-6 ${item.packed ? "text-emerald-900 line-through decoration-emerald-700/60" : "text-slate-800"}`}
+                          >
+                            <span className="block">{item.text}</span>
+                            <span className="mt-1 flex flex-wrap gap-1.5">
+                              {item.required ? <span className="rounded-full bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700">חובה</span> : null}
+                              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600"><Users className="h-3 w-3" />{item.owner}</span>
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onDelete(item.id)}
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-rose-100 bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                            aria-label="מחק פריט"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )) : (
+                        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-5 text-center text-sm leading-6 text-slate-500">
+                          אין פריטים בקטגוריה הזו לפי הסינון הנוכחי.
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
+                </section>
+              );
+            })}
+
+            {!visibleItems.length ? (
               <div className="rounded-[1.4rem] border border-dashed border-slate-300 bg-white/70 px-4 py-8 text-center text-sm leading-6 text-slate-500">
-                הרשימה ריקה. הוסיפו פריטים חדשים כדי לבנות צ׳ק ליסט אישי.
+                אין פריטים בסינון הנוכחי. נסו לעבור ל״הכל״ או להוסיף פריט חדש.
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
