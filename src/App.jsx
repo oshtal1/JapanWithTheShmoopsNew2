@@ -5,6 +5,7 @@ import {
   BedDouble,
   CalendarDays,
   CheckCircle2,
+  ClipboardList,
   ChevronLeft,
   ChevronRight,
   Circle,
@@ -15,15 +16,34 @@ import {
   Download,
   Home,
   Menu,
+  Plus,
   Search,
   ShoppingBag,
   X,
   Train,
+  Trash2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+
+const defaultPackingItems = [
+  { id: "passport", text: "דרכונים", packed: false },
+  { id: "flight-docs", text: "כרטיסי טיסה ומסמכי הזמנות", packed: false },
+  { id: "yen-cash", text: "יין יפני / מזומן ראשוני", packed: false },
+  { id: "credit-cards", text: "כרטיסי אשראי", packed: false },
+  { id: "travel-insurance", text: "ביטוח נסיעות", packed: false },
+  { id: "sim-esim", text: "eSIM / סים / אינטרנט", packed: false },
+  { id: "chargers", text: "מטענים וכבלים", packed: false },
+  { id: "adapter", text: "מתאם חשמל ליפן", packed: false },
+  { id: "power-bank", text: "סוללת גיבוי", packed: false },
+  { id: "meds", text: "תרופות קבועות ועזרה ראשונה", packed: false },
+  { id: "walking-shoes", text: "נעלי הליכה נוחות", packed: false },
+  { id: "rain-jacket", text: "מעיל גשם / מטרייה מתקפלת", packed: false },
+  { id: "toiletries", text: "תיק רחצה", packed: false },
+  { id: "laundry", text: "שק כביסה", packed: false },
+];
 
 const hotels = [
   { city: "טוקיו", name: "Shinjuku Granbell Hotel", cost: 1828.57, nights: "14–17 במאי" },
@@ -449,6 +469,16 @@ export default function JapanWithTheShmoops() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [installPromptEvent, setInstallPromptEvent] = useState(null);
   const [installHelpOpen, setInstallHelpOpen] = useState(false);
+  const [packingOpen, setPackingOpen] = useState(false);
+  const [newPackingText, setNewPackingText] = useState("");
+  const [packingItems, setPackingItems] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("japan-trip-packing-list") || "null");
+      return Array.isArray(saved) && saved.length ? saved : defaultPackingItems;
+    } catch {
+      return defaultPackingItems;
+    }
+  });
   const [isStandalone, setIsStandalone] = useState(false);
   const [done, setDone] = useState(() => {
     try {
@@ -461,6 +491,10 @@ export default function JapanWithTheShmoops() {
   useEffect(() => {
     localStorage.setItem("japan-trip-done", JSON.stringify(done));
   }, [done]);
+
+  useEffect(() => {
+    localStorage.setItem("japan-trip-packing-list", JSON.stringify(packingItems));
+  }, [packingItems]);
 
   useEffect(() => {
     const checkStandalone = () => {
@@ -544,6 +578,21 @@ export default function JapanWithTheShmoops() {
   const toggleDone = (index, partKey = null) => {
     const key = getItemStorageKey(day, index, partKey);
     setDone((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const togglePackingItem = (id) => {
+    setPackingItems((prev) => prev.map((item) => item.id === id ? { ...item, packed: !item.packed } : item));
+  };
+
+  const addPackingItem = () => {
+    const text = newPackingText.trim();
+    if (!text) return;
+    setPackingItems((prev) => [{ id: "packing-" + Date.now(), text, packed: false }, ...prev]);
+    setNewPackingText("");
+  };
+
+  const deletePackingItem = (id) => {
+    setPackingItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   const moveDay = (direction) => {
@@ -669,6 +718,26 @@ export default function JapanWithTheShmoops() {
                   />
                 </div>
 
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPackingOpen(true);
+                    setMenuOpen(false);
+                  }}
+                  className="flex w-full items-center justify-between gap-3 rounded-[1.5rem] border border-emerald-100 bg-emerald-50/90 px-4 py-4 text-right shadow-sm transition hover:border-emerald-200 hover:bg-emerald-100/80"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm">
+                      <ClipboardList className="h-5 w-5" />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-black text-slate-900">צ׳ק ליסט אריזות לטיול</span>
+                      <span className="mt-1 block text-sm text-slate-500">הוספה, מחיקה וסימון פריטים. נשמר אוטומטית.</span>
+                    </span>
+                  </span>
+                  <ChevronLeft className="h-5 w-5 text-emerald-700" />
+                </button>
+
                 <div>
                   <div className="mb-3 text-sm font-bold text-slate-800">סינון לפי אזור</div>
                   <div className="flex flex-wrap gap-2">
@@ -767,6 +836,23 @@ export default function JapanWithTheShmoops() {
               </div>
             </div>
           </div>
+        )}
+
+        {packingOpen && (
+          <PackingChecklistModal
+            items={packingItems}
+            newItemText={newPackingText}
+            setNewItemText={setNewPackingText}
+            onAdd={addPackingItem}
+            onToggle={togglePackingItem}
+            onDelete={deletePackingItem}
+            onClose={() => setPackingOpen(false)}
+            onBackToMenu={() => {
+              setPackingOpen(false);
+              setMenuOpen(true);
+            }}
+            accentClass={theme.accent}
+          />
         )}
 
         {installHelpOpen && (
@@ -1103,6 +1189,118 @@ function ActivityList({ items, day, done, toggleDone, accentClass, partKey = nul
       </section>
     );
   });
+}
+
+function PackingChecklistModal({ items, newItemText, setNewItemText, onAdd, onToggle, onDelete, onClose, onBackToMenu, accentClass }) {
+  const packedCount = items.filter((item) => item.packed).length;
+  const totalCount = items.length;
+
+  return (
+    <div className="fixed inset-0 z-[60]">
+      <button
+        type="button"
+        className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]"
+        onClick={onClose}
+        aria-label="סגור צ׳ק ליסט אריזות"
+      />
+      <div className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-white/60 bg-[#fffaf6]/95 shadow-2xl backdrop-blur-2xl">
+        <div className="border-b border-slate-200 bg-[#fffaf6]/95 px-5 py-4 backdrop-blur">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-lg font-black text-slate-900">
+                <ClipboardList className="h-5 w-5 text-emerald-700" />
+                צ׳ק ליסט אריזות לטיול
+              </div>
+              <div className="mt-1 text-sm leading-6 text-slate-500">הפריטים, הסימונים והשינויים נשמרים אוטומטית במכשיר.</div>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700"
+              aria-label="סגור"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="mt-4 rounded-[1.4rem] border border-emerald-100 bg-emerald-50 px-4 py-3">
+            <div className="flex items-center justify-between gap-3 text-sm font-bold text-emerald-900">
+              <span>התקדמות אריזה</span>
+              <span>{packedCount}/{totalCount}</span>
+            </div>
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-white">
+              <div className={`h-full rounded-full bg-gradient-to-l ${accentClass}`} style={{ width: totalCount ? `${(packedCount / totalCount) * 100}%` : "0%" }} />
+            </div>
+          </div>
+        </div>
+
+        <div className="border-b border-slate-200 bg-white/60 px-5 py-3">
+          <button
+            type="button"
+            onClick={onBackToMenu}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+          >
+            <ChevronRight className="h-4 w-4" />
+            חזרה לתפריט הראשי
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-5">
+          <form
+            className="mb-4 flex gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              onAdd();
+            }}
+          >
+            <Input
+              className="h-12 rounded-2xl border-slate-200 bg-white shadow-inner"
+              placeholder="הוספת פריט חדש לרשימה"
+              value={newItemText}
+              onChange={(event) => setNewItemText(event.target.value)}
+            />
+            <Button type="submit" className={`h-12 rounded-2xl bg-gradient-to-l px-4 text-white shadow-lg ${accentClass}`}>
+              <Plus className="h-4 w-4" />
+              הוסף
+            </Button>
+          </form>
+
+          <div className="space-y-2">
+            {items.length ? items.map((item) => (
+              <div key={item.id} className={`flex items-center gap-3 rounded-2xl border px-3 py-3 shadow-sm transition ${item.packed ? "border-emerald-100 bg-emerald-50/80" : "border-slate-200 bg-white"}`}>
+                <button
+                  type="button"
+                  onClick={() => onToggle(item.id)}
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${item.packed ? "border-emerald-200 bg-emerald-600 text-white" : "border-slate-200 bg-white text-slate-500"}`}
+                  aria-label={item.packed ? "סמן כלא נארז" : "סמן כנארז"}
+                >
+                  {item.packed ? <CheckCircle2 className="h-5 w-5" /> : <Circle className="h-5 w-5" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onToggle(item.id)}
+                  className={`min-w-0 flex-1 text-right text-sm font-semibold leading-6 ${item.packed ? "text-emerald-900 line-through decoration-emerald-700/60" : "text-slate-800"}`}
+                >
+                  {item.text}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDelete(item.id)}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-rose-100 bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                  aria-label="מחק פריט"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            )) : (
+              <div className="rounded-[1.4rem] border border-dashed border-slate-300 bg-white/70 px-4 py-8 text-center text-sm leading-6 text-slate-500">
+                הרשימה ריקה. הוסיפו פריטים חדשים כדי לבנות צ׳ק ליסט אישי.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function SummaryRow({ label, value }) {
